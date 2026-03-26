@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
@@ -23,40 +23,94 @@ type MarketplaceClientProps = {
 const getRarityColor = (r: string) => {
   switch (r) {
     case "Legendary":
-      return "bg-amber-500/20 text-amber-300 border-amber-500/50";
+      return "text-amber-500";
     case "Mythical":
-      return "bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-500/50";
+      return "text-fuchsia-500";
     case "Exotic":
-      return "bg-rose-500/20 text-rose-300 border-rose-500/50";
+      return "text-rose-500";
     default:
-      return "bg-slate-500/20 text-slate-300 border-slate-500/50";
+      return "text-gray-400";
   }
 };
 
-const getRarityGlow = (r: string) => {
-  switch (r) {
-    case "Legendary":
-      return "before:from-amber-500/35 before:via-orange-400/20 before:to-yellow-300/30 after:from-amber-500/30 after:via-transparent after:to-yellow-300/30";
-    case "Mythical":
-      return "before:from-fuchsia-500/35 before:via-pink-400/20 before:to-violet-400/30 after:from-fuchsia-500/30 after:via-transparent after:to-violet-400/30";
-    case "Exotic":
-      return "before:from-rose-500/35 before:via-red-400/20 before:to-amber-300/30 after:from-rose-500/30 after:via-transparent after:to-amber-300/30";
-    default:
-      return "before:from-slate-500/30 before:via-slate-400/15 before:to-slate-300/25 after:from-slate-500/25 after:via-transparent after:to-slate-300/25";
-  }
-};
+const rarityOrder = [
+  "Common",
+  "Uncommon",
+  "Rare",
+  "Exotic",
+  "Mythical",
+  "Legendary",
+  "Ancient",
+  "Unique",
+];
 
 export default function MarketplaceClient({ items }: MarketplaceClientProps) {
   const [catActive, setCatActive] = useState(0);
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [priceOpen, setPriceOpen] = useState(true);
+  const [rarityOpen, setRarityOpen] = useState(true);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [minPrice, setMinPrice] = useState<number | "">("");
+  const [maxPrice, setMaxPrice] = useState<number | "">("");
+  const [selectedRarities, setSelectedRarities] = useState<Record<string, boolean>>({});
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(items.map((item) => item.category)))],
     [items]
   );
 
-  const visibleItems =
-    catActive === 0 ? items : items.filter((item) => item.category === categories[catActive]);
+  const rarityCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const item of items) {
+      counts[item.rarity] = (counts[item.rarity] ?? 0) + 1;
+    }
+    return counts;
+  }, [items]);
+
+  const priceBounds = useMemo(() => {
+    if (!items.length) return { min: 0, max: 0 };
+    let min = items[0].price;
+    let max = items[0].price;
+    for (const item of items) {
+      min = Math.min(min, item.price);
+      max = Math.max(max, item.price);
+    }
+    return { min, max };
+  }, [items]);
+
+  const selectedRarityList = useMemo(
+    () => Object.keys(selectedRarities).filter((r) => selectedRarities[r]),
+    [selectedRarities]
+  );
+
+  const visibleItems = useMemo(() => {
+    let next = catActive === 0 ? items : items.filter((item) => item.category === categories[catActive]);
+
+    if (selectedRarityList.length > 0) {
+      next = next.filter((item) => selectedRarityList.includes(item.rarity));
+    }
+
+    if (minPrice !== "") {
+      next = next.filter((item) => item.price >= minPrice);
+    }
+
+    if (maxPrice !== "") {
+      next = next.filter((item) => item.price <= maxPrice);
+    }
+
+    return next;
+  }, [items, categories, catActive, selectedRarityList, minPrice, maxPrice]);
+
+  const resetFilters = () => {
+    setMinPrice("");
+    setMaxPrice("");
+    setSelectedRarities({});
+    setCatActive(0);
+  };
+
+  const toggleRarity = (rarity: string) => {
+    setSelectedRarities((prev) => ({ ...prev, [rarity]: !prev[rarity] }));
+  };
 
   const addToCart = (id: string) => {
     setCart((prev) => ({ ...prev, [id]: 1 }));
@@ -77,141 +131,272 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
     });
   };
 
+  const rarityList = useMemo(() => {
+    const all = Object.keys(rarityCounts);
+    const known = rarityOrder.filter((r) => all.includes(r));
+    const rest = all.filter((r) => !rarityOrder.includes(r));
+    return [...known, ...rest];
+  }, [rarityCounts]);
+
   return (
-    <>
-      {/* Category Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-6 scrollbar-hide">
-        {categories.map((cat, i) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setCatActive(i)}
-            className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              i === catActive
-                ? "bg-white text-black"
-                : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between lg:hidden">
+        <button
+          type="button"
+          onClick={() => setMobileFiltersOpen((prev) => !prev)}
+          className="inline-flex items-center gap-2 rounded-full border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#0b0b0b] px-4 py-2 text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+          aria-expanded={mobileFiltersOpen}
+          aria-controls="mobile-filters"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M3 5h14v2H3V5zm3 5h8v2H6v-2zm3 5h2v2H9v-2z" />
+          </svg>
+          Filters
+        </button>
       </div>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
-        {visibleItems.map((item) => (
-          <div
-            key={item.id}
-            className="group relative isolate flex flex-col rounded-xl border border-white/5 bg-zinc-900 transition-all hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10"
-          >
-            {/* Hover Glow Effect */}
-            <div
-              className={`pointer-events-none absolute inset-0 -z-20 rounded-xl before:content-[''] before:absolute before:inset-0 before:rounded-xl before:scale-100 before:bg-gradient-to-br before:opacity-0 before:transition before:duration-300 before:will-change-transform group-hover:before:opacity-100 group-hover:before:-rotate-2 group-hover:before:scale-[1.06] after:content-[''] after:absolute after:inset-0 after:rounded-xl after:scale-100 after:bg-gradient-to-tr after:opacity-0 after:transition after:duration-300 after:will-change-transform group-hover:after:opacity-100 group-hover:after:rotate-2 group-hover:after:scale-[1.03] ${getRarityGlow(
-                item.rarity
-              )}`}
-            />
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+        <aside
+          id="mobile-filters"
+          className={`h-fit rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#0b0b0b] ${
+            mobileFiltersOpen ? "block" : "hidden"
+          } lg:sticky lg:top-20 lg:block`}
+        >
+          <div className="px-4 py-4 border-b border-neutral-200 dark:border-neutral-800 flex items-center justify-between">
+            <span className="text-base font-semibold text-neutral-900 dark:text-white">
+              Filter items
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="text-sm font-medium text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileFiltersOpen(false)}
+                className="text-sm font-semibold text-neutral-600 dark:text-neutral-400 lg:hidden"
+              >
+                Close
+              </button>
+            </div>
+          </div>
 
-            <Link href={`/item/${item.id}`} className="block relative z-10">
-              {/* Image */}
-              <div className="relative aspect-[16/9] w-full bg-zinc-800 overflow-hidden rounded-tr-xl rounded-tl-xl">
-                {item.image ? (
-                  <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-zinc-700">
-                    <svg className="h-12 w-12 opacity-20" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+        <div className="px-4">
+          <div className="py-4 border-b border-dashed border-neutral-200 dark:border-neutral-800">
+            <button
+              type="button"
+              onClick={() => setPriceOpen((prev) => !prev)}
+              className="w-full flex items-center py-1"
+              aria-expanded={priceOpen}
+            >
+              <h4 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Price</h4>
+              <span className={`ml-auto h-5 w-5 text-neutral-500 transition-transform ${priceOpen ? "rotate-180" : ""}`}>
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z" />
+                </svg>
+              </span>
+            </button>
+
+            {priceOpen && (
+              <div className="pt-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      <span>$</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                        placeholder={priceBounds.min.toFixed(2)}
+                        className="w-full bg-transparent text-right text-sm text-black dark:text-white outline-none"
+                      />
+                    </div>
                   </div>
-                )}
-                <div className="absolute top-2 left-2 rounded bg-black/60 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
-                  {item.game}
+
+                  <span className="text-neutral-400">-</span>
+
+                  <div className="flex-1 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-900 px-3 py-2">
+                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      <span>$</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value === "" ? "" : Number(e.target.value))}
+                        placeholder={priceBounds.max.toFixed(2)}
+                        className="w-full bg-transparent text-right text-sm text-black dark:text-white outline-none"
+                      />
+                    </div>
+                  </div>
                 </div>
-                {item.verified && (
-                  <div className="absolute top-2 right-2 rounded-full bg-indigo-600 p-1 shadow-lg shadow-indigo-500/40">
-                    <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                )}
-              </div>
-            </Link>
 
-            {/* Content */}
-            <div className="relative z-10 flex flex-1 flex-col p-4">
-              <Link href={`/item/${item.id}`} className="flex-1 group/title">
-                <h3 className="text-sm font-semibold text-white group-hover/title:text-indigo-400 transition-colors line-clamp-1">
-                  {item.name}
-                </h3>
-                <div className="mt-1 flex items-center gap-2">
-                  {item.rarity && (
-                    <span
-                      className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-bold border uppercase tracking-wider ${getRarityColor(
-                        item.rarity
-                      )}`}
-                    >
-                      {item.rarity}
+                <div className="mt-4">
+                  <input
+                    type="range"
+                    min={priceBounds.min}
+                    max={priceBounds.max}
+                    step={0.01}
+                    value={minPrice === "" ? priceBounds.min : minPrice}
+                    onChange={(e) => setMinPrice(Number(e.target.value))}
+                    className="w-full accent-violet-500"
+                  />
+                  <input
+                    type="range"
+                    min={priceBounds.min}
+                    max={priceBounds.max}
+                    step={0.01}
+                    value={maxPrice === "" ? priceBounds.max : maxPrice}
+                    onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    className="w-full accent-violet-500"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="py-4">
+            <button
+              type="button"
+              onClick={() => setRarityOpen((prev) => !prev)}
+              className="w-full flex items-center py-1"
+              aria-expanded={rarityOpen}
+            >
+              <h4 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+                Weapon Rarity
+              </h4>
+              <span className={`ml-auto h-5 w-5 text-neutral-500 transition-transform ${rarityOpen ? "rotate-180" : ""}`}>
+                <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
+                  <path d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.24 4.5a.75.75 0 01-1.08 0l-4.24-4.5a.75.75 0 01.02-1.06z" />
+                </svg>
+              </span>
+            </button>
+
+            {rarityOpen && (
+              <div className="pt-3 flex flex-col gap-3">
+                {rarityList.map((rarity) => (
+                  <label key={rarity} className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                    <input
+                      type="checkbox"
+                      checked={!!selectedRarities[rarity]}
+                      onChange={() => toggleRarity(rarity)}
+                      className="h-4 w-4 rounded border-neutral-300 text-violet-500 focus:ring-violet-500"
+                    />
+                    <span className="flex-1">
+                      {rarity}
                     </span>
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                      {rarityCounts[rarity] ?? 0}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        </aside>
+
+        <section>
+        {/* Category Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar">
+          {categories.map((cat, i) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setCatActive(i)}
+              className={`whitespace-nowrap rounded-full px-5 py-2 text-sm font-medium transition-all ${
+                i === catActive
+                  ? "bg-black text-white dark:bg-white dark:text-black"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Clean Grid Layout */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {visibleItems.map((item) => (
+            <div
+              key={item.id}
+              className="group flex flex-col"
+            >
+              <Link href={`/item/${item.id}`} className="block relative">
+                <div className="relative aspect-[4/3] w-full bg-neutral-100 dark:bg-neutral-900 overflow-hidden rounded-sm border border-neutral-200 dark:border-neutral-800">
+                  {item.image ? (
+                    <Image src={item.image} alt={item.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-neutral-300 dark:text-neutral-700">
+                      <svg className="h-12 w-12 opacity-20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
                   )}
-                  <span className="text-[10px] font-medium text-zinc-500 uppercase">{item.category}</span>
                 </div>
               </Link>
 
-              <div className="mt-4 flex flex-col gap-3">
-                <div className="flex items-center justify-between border-t border-white/5 pt-3">
-                  <div className="flex items-center gap-2 text-xs text-zinc-400">
-                    <div className="h-5 w-5 rounded-full bg-zinc-800 ring-1 ring-white/10 flex items-center justify-center text-[10px] text-zinc-300">
-                      {item.seller.charAt(0)}
-                    </div>
-                    <span className="truncate max-w-[80px]">{item.seller}</span>
+              {/* Content */}
+              <div className="mt-3 flex flex-col gap-1">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-base font-bold text-black dark:text-white line-clamp-1">
+                    {item.name}
+                  </h3>
+                  <div className="bg-neutral-100 dark:bg-neutral-800 h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">
+                    4.9
                   </div>
-                  <p className="text-sm font-bold text-white">${item.price.toFixed(2)}</p>
                 </div>
 
-                {cart[item.id] ? (
-                  <div className="w-full rounded-lg bg-indigo-600/10 p-1.5 ring-1 ring-inset ring-indigo-500/40 shadow-lg shadow-indigo-500/10 transition-all group-hover:translate-y-[-1px]">
-                    <div className="flex items-center justify-between rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-bold text-white">
-                      <button
-                        type="button"
-                        aria-label={`Decrease quantity for ${item.name}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          decQty(item.id);
-                        }}
-                        className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 transition-all hover:bg-white/20 active:scale-[0.97]"
-                      >
-                        <span className="text-base leading-none">−</span>
-                      </button>
-                      <span className="tabular-nums">{cart[item.id]}</span>
-                      <button
-                        type="button"
-                        aria-label={`Increase quantity for ${item.name}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          incQty(item.id);
-                        }}
-                        className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 transition-all hover:bg-white/20 active:scale-[0.97]"
-                      >
-                        <span className="text-base leading-none">+</span>
-                      </button>
-                    </div>
+                <div className="flex items-center gap-1 text-sm text-neutral-500 dark:text-neutral-500">
+                  <span>{item.game}</span>
+                  <span>&bull;</span>
+                  <span>{item.seller}</span>
+                </div>
+
+                <div className="mt-1 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-bold">${item.price.toFixed(2)}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 border rounded-sm uppercase tracking-tight ${getRarityColor(item.rarity)}`}>
+                      {item.rarity}
+                    </span>
                   </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addToCart(item.id);
-                    }}
-                    className="w-full rounded-lg bg-indigo-600 py-2.5 text-xs font-bold text-white transition-all hover:bg-indigo-500 active:scale-[0.97] shadow-lg shadow-indigo-500/20 group-hover:translate-y-[-1px]"
-                  >
-                    Add to cart
-                  </button>
-                )}
+
+                  {cart[item.id] ? (
+                    <div className="flex items-center gap-3 bg-black text-white dark:bg-white dark:text-black rounded-full px-3 py-1 scale-90">
+                      <button onClick={() => decQty(item.id)} className="font-bold">&minus;</button>
+                      <span className="text-xs font-bold">{cart[item.id]}</span>
+                      <button onClick={() => incQty(item.id)} className="font-bold">+</button>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => addToCart(item.id)}
+                      className="bg-violet-500 text-white p-1.5 rounded-full hover:bg-[#05a357] transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+
+          {visibleItems.length === 0 && (
+            <div className="col-span-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 px-6 py-12 text-center">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                No items match those filters. Try resetting or adjusting your price range.
+              </p>
+            </div>
+          )}
+        </div>
+        </section>
       </div>
-    </>
+    </div>
   );
 }
