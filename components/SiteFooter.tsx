@@ -10,30 +10,29 @@ export default function SiteFooter() {
               </span>
             </div>
             <p className="text-sm text-neutral-600 dark:text-white/60 max-w-xs">
-              Unified security automation for hybrid environments, designed for fast-moving teams.
+              The most secure and fastest marketplace for Roblox items. Trade with confidence.
             </p>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-white/50 mb-6">
-              Get Help
+              Marketplace
             </h3>
             <ul className="space-y-4 text-sm text-neutral-600 dark:text-white/60">
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Buy Gift Cards</a></li>
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Sell on BloxBolt</a></li>
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Create a business account</a></li>
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Promotions</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">All Items</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Affiliates</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Discord</a></li>
             </ul>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-500 dark:text-white/50 mb-6">
-              Legal
+              Support
             </h3>
             <ul className="space-y-4 text-sm text-neutral-600 dark:text-white/60">
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Terms</a></li>
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Privacy</a></li>
-              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Guidelines</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">FAQ</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-neutral-900 dark:hover:text-white transition-colors">Privacy Policy</a></li>
             </ul>
           </div>
         </div>

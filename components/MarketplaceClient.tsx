@@ -1,8 +1,9 @@
 ﻿"use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { BASKET_STORAGE_KEY, type BasketState } from "@/lib/basket-storage";
 
 type MarketplaceItem = {
   id: string;
@@ -44,15 +45,40 @@ const rarityOrder = [
   "Unique",
 ];
 
+const getInitialBasket = (): BasketState => {
+  if (typeof window === "undefined") {
+    return {};
+  }
+
+  try {
+    const raw = localStorage.getItem(BASKET_STORAGE_KEY);
+    if (!raw) {
+      return {};
+    }
+    const parsed = JSON.parse(raw) as BasketState;
+    if (parsed && typeof parsed === "object") {
+      return parsed;
+    }
+    return {};
+  } catch {
+    return {};
+  }
+};
+
 export default function MarketplaceClient({ items }: MarketplaceClientProps) {
   const [catActive, setCatActive] = useState(0);
-  const [cart, setCart] = useState<Record<string, number>>({});
+  const [cart, setCart] = useState<BasketState>(getInitialBasket);
   const [priceOpen, setPriceOpen] = useState(true);
   const [rarityOpen, setRarityOpen] = useState(true);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [minPrice, setMinPrice] = useState<number | "">("");
   const [maxPrice, setMaxPrice] = useState<number | "">("");
   const [selectedRarities, setSelectedRarities] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    localStorage.setItem(BASKET_STORAGE_KEY, JSON.stringify(cart));
+    window.dispatchEvent(new Event("bloxbolt:basket-change"));
+  }, [cart]);
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(items.map((item) => item.category)))],
@@ -124,8 +150,9 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
     setCart((prev) => {
       const nextQty = (prev[id] ?? 0) - 1;
       if (nextQty <= 0) {
-        const { [id]: _removed, ...rest } = prev;
-        return rest;
+        const next = { ...prev };
+        delete next[id];
+        return next;
       }
       return { ...prev, [id]: nextQty };
     });
@@ -139,7 +166,7 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
   }, [rarityCounts]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 lg:space-y-0">
       <div className="flex items-center justify-between lg:hidden">
         <button
           type="button"
@@ -375,7 +402,7 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
                   ) : (
                     <button 
                       onClick={() => addToCart(item.id)}
-                      className="bg-violet-500 text-white p-1.5 rounded-full hover:bg-[#05a357] transition-colors"
+                      className="bg-violet-500 text-white p-1.5 rounded-full hover:bg-violet-700 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />

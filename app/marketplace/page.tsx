@@ -4,7 +4,14 @@ import MarketplaceClient from "@/components/MarketplaceClient";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-export default async function Home() {
+type MarketplacePageProps = {
+  searchParams?: Promise<{ q?: string }>;
+};
+
+export default async function Home({ searchParams }: MarketplacePageProps) {
+  const params = searchParams ? await searchParams : undefined;
+  const searchQuery = params?.q?.trim() ?? "";
+
   const items = [
     {
       id: "1",
@@ -53,6 +60,22 @@ export default async function Home() {
     
   ];
 
+  const normalizedQuery = searchQuery.toLowerCase();
+  const filteredItems = normalizedQuery
+    ? items.filter((item) => {
+        const haystack = [
+          item.name,
+          item.game,
+          item.category,
+          item.rarity,
+          item.seller,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(normalizedQuery);
+      })
+    : items;
+
   const sessionSecret = process.env.AUTH_SESSION_SECRET;
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
@@ -60,14 +83,14 @@ export default async function Home() {
     sessionSecret && token ? verifySessionToken(token, sessionSecret) : null;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0b0b0b] text-black dark:text-white font-sans selection:bg-[#06C167]/30 transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-[#0b0b0b] text-black dark:text-white font-sans selection:bg-violet-500/30 transition-colors duration-300">
       {/* Uber-style Navbar */}
-      <SiteHeader user={session?.user ?? null} />
+      <SiteHeader user={session?.user ?? null} searchQuery={searchQuery} />
 
       <main className="flex-1 pb-20">
         {/* Filters & Content */}
         <div className="mx-auto max-w-[1400px] px-6 py-6">
-          <MarketplaceClient items={items} />
+          <MarketplaceClient items={filteredItems} />
         </div>
       </main>
 

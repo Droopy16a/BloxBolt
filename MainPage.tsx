@@ -5,6 +5,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import type { SessionUser } from "@/lib/auth-session";
 import { Shield, Zap, Lock, BarChart3, ChevronRight, Menu, Clock } from 'lucide-react';
+import Image from "next/image";
 
 const StarIcon = ({ className = "w-4 h-4", filled = true }: { className?: string; filled?: boolean }) => (
   <svg 
@@ -23,27 +24,19 @@ type MainPageProps = {
 const rates = [
   {
     rate: 4.9,
-    title: "All in one platform",
-    description: "We chose BloxBolt for efficient item management. The security and ease of use for end-user transactions is effective. We value its speed and excellent support.",
-    name: "Michael Sutherland",
+    title: "First experience",
+    description: "It was my first experience with buying online on this site. I had problems logging in. I was helped immediately by the person where I bought the account.",
+    name: "Alan Delonhi",
     date: "26/03/2026",
     profile: "https://cdn.prod.website-files.com/66f2e124a485e76ba634c932/689dc346fb47869c3c6b1ce0_6751d24a04a363cf4b98c3cd_img.svg",
   },
   {
     rate: 4.9,
     title: "From urgency to strategy",
-    description: "BloxBolt allowed us to step away from reactive trading and finally manage inventory with strategy instead of urgency. The automated platform is a game changer.",
-    name: "Tal Shachar",
+    description: "After that it worked really great. The escrow system gave me confidence to trade high-value items without worry.",
+    name: "Marcus Chen",
     date: "26/03/2026",
-    profile: "https://cdn.prod.website-files.com/66f2e124a485e76ba634c932/69035aed7b8b88051db93225_68790cf3e7efd0c4b0103d6b_tal_shahar.png",
-  },
-  {
-    rate: 4.9,
-    title: "From urgency to strategy",
-    description: "BloxBolt allowed us to step away from reactive trading and finally manage inventory with strategy instead of urgency. The automated platform is a game changer.",
-    name: "Tal Shachar",
-    date: "26/03/2026",
-    profile: "https://cdn.prod.website-files.com/66f2e124a485e76ba634c932/69035aed7b8b88051db93225_68790cf3e7efd0c4b0103d6b_tal_shahar.png",
+    profile: "https://cdn.prod.website-files.com/66f2e124a485e76ba634c932/689dc346fb47869c3c6b1ce0_6751d24a04a363cf4b98c3cd_img.svg",
   },
 ]
 
@@ -83,10 +76,44 @@ export default function MainPage({ user }: MainPageProps) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_farthest-side_at_0%_0%,#ede9fe,transparent_100%)] opacity-40 dark:bg-[radial-gradient(circle_farthest-side_at_0%_0%,#1a1033,transparent_100%)]"></div>
       </div>
 
-      <SiteHeader />
+
+      <style jsx>{`
+        .section_gradient_dark-left {
+          background-image: radial-gradient(circle farthest-side at 0% 100%, #4a4bb9 20%, #050505 95%);
+          position: absolute;
+          inset: 0%;
+        }
+        .section_background_grid {
+          width: 100%;
+          position: absolute;
+          inset: auto 0% 0%;
+          opacity: 0.35;
+        }
+      `}</style>
+
+      <SiteHeader user={user ?? null} />
 
       <main className="relative z-10 pt-0">
-        <section className="container mx-auto px-6 pt-32 pb-24 text-center">
+        <section className="relative isolate pt-32 pb-24 text-center">
+          <div className="container mx-auto px-6 relative">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 right-0">
+              <div className="relative mx-auto max-w-[100rem] h-full">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:left-[-12rem] lg:translate-x-0">
+                  <div className="relative h-full w-auto max-h-[42rem] sm:max-h-[48rem] lg:max-h-[56rem] xl:max-h-[62rem]">
+                    <Image
+                      src="/logo.png"
+                      alt=""
+                      width={648}
+                      height={648}
+                      priority
+                      className="h-full w-auto object-contain opacity-[0.08] blur-[1px] brightness-[0] [mask-image:radial-gradient(circle_at_center,black_42%,transparent_78%)] dark:opacity-[0.14] dark:brightness-[1]"
+                    />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle,#8b5cf61f,transparent_65%)] blur-3xl"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="relative z-10">
           <div className="flex items-center justify-center gap-3 mb-8">
             <div className="flex items-center gap-1">
               {[...Array(5)].map((_, i) => (
@@ -120,9 +147,13 @@ export default function MainPage({ user }: MainPageProps) {
             </button>
             </Link>
           </div>
+            </div>
+          </div>
+
         </section>
 
         {/* Architecture Spotlight: Bento Grid Features */}
+
         <section className="container mx-auto px-6 py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <FeatureCard 
@@ -147,6 +178,81 @@ export default function MainPage({ user }: MainPageProps) {
               description="Continuous configuration monitoring."
               className="md:col-span-2"
             />
+          </div>
+        </section>
+
+             <section className="section_vrx relative overflow-hidden">
+          <div className="section_gradient_dark-left"></div>
+          <img
+            loading="lazy"
+            src="https://cdn.prod.website-files.com/66f277960b716d6f5a4f06a2/6704e69ccc69295019af21ff_bg-grid-dark.svg"
+            alt=""
+            className="section_background_grid"
+          />
+          <div className="padding-global padding-section-large relative z-10">
+            <div className="container-large mx-auto px-6 py-20">
+              <div className="z-index-1">
+                <div className="solution_component">
+                  <div className="margin-bottom margin-xlarge">
+                    <div className="align-center max-width-large">
+                      <div className="text-align-center text-center">
+                        <div className="caption is-dark inline-flex items-center gap-2 text-sm uppercase tracking-wide text-neutral-300">
+                        </div>
+                        <div className="spacer-medium h-4"></div>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight text-neutral-900 text-white mb-4">
+                          How It  <span className="text-violet-500 dark:text-violet-400">Works</span>
+                        </h2>
+                        <p className="mx-auto max-w-2xl text-neutral-300 text-base md:text-lg font-light">
+                          Get started in minutes. Four simple steps to your first trade.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 backdrop-blur-sm">
+                      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/20 text-violet-200 font-semibold">
+                        1
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Create an Account</h3>
+                      <p className="text-neutral-300 font-light leading-relaxed">
+                        Sign up in seconds with your email. No complicated verification required.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 backdrop-blur-sm">
+                      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/20 text-violet-200 font-semibold">
+                        2
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Deposit Crypto</h3>
+                      <p className="text-neutral-300 font-light leading-relaxed">
+                        Fund your wallet with BTC, ETH, SOL, USDT and more. Deposits are instant.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 backdrop-blur-sm">
+                      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/20 text-violet-200 font-semibold">
+                        3
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Browse & Buy</h3>
+                      <p className="text-neutral-300 font-light leading-relaxed">
+                        Explore thousands of Roblox items from verified sellers at competitive prices.
+                      </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8 backdrop-blur-sm">
+                      <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-400/40 bg-violet-500/20 text-violet-200 font-semibold">
+                        4
+                      </div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Trade Securely</h3>
+                      <p className="text-neutral-300 font-light leading-relaxed">
+                        Every transaction is protected by our escrow system. Trade with confidence.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
         
