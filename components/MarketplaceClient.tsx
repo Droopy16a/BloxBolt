@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BASKET_STORAGE_KEY, type BasketState } from "@/lib/basket-storage";
+import {
+  BASKET_ITEMS_STORAGE_KEY,
+  BASKET_STORAGE_KEY,
+  type BasketItemsState,
+  type BasketState,
+} from "@/lib/basket-storage";
 
 type MarketplaceItem = {
   id: string;
@@ -79,6 +84,20 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
     localStorage.setItem(BASKET_STORAGE_KEY, JSON.stringify(cart));
     window.dispatchEvent(new Event("bloxbolt:basket-change"));
   }, [cart]);
+
+  useEffect(() => {
+    const details: BasketItemsState = {};
+    for (const item of items) {
+      if ((cart[item.id] ?? 0) > 0) {
+        details[item.id] = {
+          name: item.name,
+          price: item.price,
+          image: item.image,
+        };
+      }
+    }
+    localStorage.setItem(BASKET_ITEMS_STORAGE_KEY, JSON.stringify(details));
+  }, [cart, items]);
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(items.map((item) => item.category)))],
@@ -423,6 +442,7 @@ export default function MarketplaceClient({ items }: MarketplaceClientProps) {
           )}
         </div>
         </section>
+
       </div>
     </div>
   );

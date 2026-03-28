@@ -36,6 +36,12 @@ const readBasketCount = () => {
 export default function HeaderBasketCard() {
   const [count, setCount] = useState(readBasketCount);
 
+  const openBasket = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("bloxbolt:basket-open"));
+    }
+  };
+
   useEffect(() => {
     const syncCount = () => {
       setCount(readBasketCount());
@@ -61,7 +67,9 @@ export default function HeaderBasketCard() {
   return (
     <button
       type="button"
+      onClick={openBasket}
       className="hidden md:flex min-w-[140px] items-center gap-3 rounded-2xl border border-neutral-200/80 bg-white/80 px-4 py-2.5 text-left shadow-sm transition hover:bg-neutral-100 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+      aria-label="Open basket"
     >
       <span className="rounded-lg bg-neutral-100 p-2 text-neutral-700 dark:bg-white/10 dark:text-white/90">
         <BasketIcon className="h-4 w-4" />
@@ -73,4 +81,3 @@ export default function HeaderBasketCard() {
     </button>
   );
 }
-

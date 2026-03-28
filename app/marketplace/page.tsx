@@ -13,51 +13,18 @@ export default async function Home({ searchParams }: MarketplacePageProps) {
   const searchQuery = params?.q?.trim() ?? "";
 
   const items = [
-    {
-      id: "1",
-      name: "Shadow Dragon",
-      game: "Adopt Me",
-      category: "Pet",
-      rarity: "Legendary",
-      price: 45.00,
-      image: null,
-      seller: "DragonTrader99",
-      verified: true,
-    },
-    {
-      id: "2",
-      name: "Leopard Fruit",
-      game: "Blox Fruits",
-      category: "Item",
-      rarity: "Mythical",
-      price: 8.50,
-      image: null,
-      seller: "FruitMaster",
-      verified: true,
-    },
-    {
-      id: "3",
-      name: "1M Diamonds",
-      game: "Pet Sim 99",
-      category: "Currency",
-      rarity: "Common",
-      price: 2.99,
-      image: null,
-      seller: "GemSeller",
-      verified: false,
-    },
-    {
-      id: "4",
-      name: "Dark Blade",
-      game: "Blox Fruits",
-      category: "Gamepass",
-      rarity: "Exotic",
-      price: 15.00,
-      image: null,
-      seller: "SwordKing",
-      verified: true,
-    },
-    
+    { id: "1", name: "Shadow Dragon", game: "Adopt Me", category: "Pet", rarity: "Legendary", price: 45.00, image: null, seller: "DragonTrader99", verified: true },
+    { id: "2", name: "Leopard Fruit", game: "Blox Fruits", category: "Item", rarity: "Mythical", price: 8.50, image: null, seller: "FruitMaster", verified: true },
+    { id: "3", name: "1M Diamonds", game: "Pet Sim 99", category: "Currency", rarity: "Common", price: 2.99, image: null, seller: "GemSeller", verified: false },
+    { id: "4", name: "Dark Blade", game: "Blox Fruits", category: "Gamepass", rarity: "Exotic", price: 15.00, image: null, seller: "SwordKing", verified: true },
+    { id: "5", name: "Frost Dragon", game: "Adopt Me", category: "Pet", rarity: "Legendary", price: 38.00, image: null, seller: "IceTrader", verified: true },
+    { id: "6", name: "Dough Fruit", game: "Blox Fruits", category: "Item", rarity: "Mythical", price: 7.20, image: null, seller: "FruitMaster", verified: true },
+    { id: "7", name: "Huge Cat", game: "Pet Sim 99", category: "Pet", rarity: "Exotic", price: 120.00, image: null, seller: "PetCollector", verified: true },
+    { id: "8", name: "Kitsune Fruit", game: "Blox Fruits", category: "Item", rarity: "Mythical", price: 12.50, image: null, seller: "SwordKing", verified: true },
+    { id: "9", name: "Owl", game: "Adopt Me", category: "Pet", rarity: "Legendary", price: 25.00, image: null, seller: "DragonTrader99", verified: true },
+    { id: "10", name: "T-Rex Fruit", game: "Blox Fruits", category: "Item", rarity: "Legendary", price: 5.50, image: null, seller: "FruitMaster", verified: true },
+    { id: "11", name: "10M Diamonds", game: "Pet Sim 99", category: "Currency", rarity: "Common", price: 24.99, image: null, seller: "GemSeller", verified: false },
+    { id: "12", name: "Fast Boats", game: "Blox Fruits", category: "Gamepass", rarity: "Rare", price: 4.50, image: null, seller: "SwordKing", verified: true },
   ];
 
   const normalizedQuery = searchQuery.toLowerCase();

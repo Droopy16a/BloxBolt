@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 import HeaderBasketCard from "@/components/HeaderBasketCard";
+import BasketDrawer from "@/components/BasketDrawer";
 import type { SessionUser } from "@/lib/auth-session";
 
 const SearchIcon = ({ className }: { className?: string }) => (
@@ -28,8 +29,9 @@ export default function SiteHeader({
   searchAction = "/marketplace",
 }: SiteHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-200/70 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-[#050505]/80">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-neutral-200/70 bg-white/80 backdrop-blur dark:border-white/10 dark:bg-[#050505]/80">
+        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
         <div className="flex flex-1 items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-white">
@@ -89,6 +91,8 @@ export default function SiteHeader({
           )}
         </nav>
       </div>
-    </header>
+      </header>
+      <BasketDrawer />
+    </>
   );
 }
