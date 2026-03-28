@@ -20,16 +20,20 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Roblox OAuth setup
+## OAuth setup
 
 1. Copy `.env.example` to `.env.local`.
 2. Fill in:
    - `ROBLOX_CLIENT_ID`
    - `ROBLOX_CLIENT_SECRET`
    - `ROBLOX_REDIRECT_URI` (default: `http://localhost:3000/api/auth/roblox/callback`)
+   - `DISCORD_CLIENT_ID`
+   - `DISCORD_CLIENT_SECRET`
+   - `DISCORD_REDIRECT_URI` (default: `http://localhost:3000/api/auth/discord/callback`)
    - `AUTH_SESSION_SECRET` (a long random string)
 3. In your Roblox OAuth app, whitelist the exact same redirect URI value from `ROBLOX_REDIRECT_URI`.
-4. Start the app and use the Roblox button on `/login` or `/register`.
+4. In your Discord application OAuth2 settings, whitelist the exact same redirect URI value from `DISCORD_REDIRECT_URI`.
+5. Start the app and use the Roblox or Discord button on `/login` or `/register`.
 
 ## Learn More
 

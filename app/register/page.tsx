@@ -6,6 +6,7 @@ export default function RegisterPage() {
       title="Create your account"
       subtitle="Join BloxBolt and start trading Roblox items with escrow-level security."
       robloxLabel="Sign up with Roblox"
+      discordLabel="Connect with Discord"
       footerText="Already have an account?"
       footerLinkHref="/login"
       footerLinkLabel="Sign in"

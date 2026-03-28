@@ -13,6 +13,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       title="Welcome back"
       subtitle="Sign in to continue to your BloxBolt dashboard and marketplace tools."
       robloxLabel="Continue with Roblox"
+      discordLabel="Connect with Discord"
       footerText="New to BloxBolt?"
       footerLinkHref="/register"
       footerLinkLabel="Create an account"
