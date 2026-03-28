@@ -11,6 +11,18 @@ import {
   type BasketState,
 } from "@/lib/basket-storage";
 
+const BasketIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M3 3h2l2.2 10.3a2 2 0 002 1.7h7.9a2 2 0 002-1.6L21 7H7"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19a1 1 0 100 2 1 1 0 000-2zM18 19a1 1 0 100 2 1 1 0 000-2z" />
+  </svg>
+);
+
 const readBasket = (): BasketState => {
   if (typeof window === "undefined") {
     return {};
@@ -97,7 +109,22 @@ export default function BasketDrawer() {
   );
 
   return (
-    <div className={`fixed inset-0 z-[60] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-white shadow-[0_12px_30px_rgba(139,92,246,0.45)] transition hover:bg-violet-500 md:hidden"
+        aria-label="Open basket"
+      >
+        <BasketIcon className="h-6 w-6" />
+        {totalItems > 0 && (
+          <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-black px-1.5 py-0.5 text-center text-[10px] font-bold leading-none text-white dark:bg-white dark:text-black">
+            {totalItems}
+          </span>
+        )}
+      </button>
+
+      <div className={`fixed inset-0 z-[60] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
       <button
         type="button"
         onClick={() => setOpen(false)}
@@ -179,6 +206,7 @@ export default function BasketDrawer() {
           </Link>
         </div>
       </aside>
-    </div>
+      </div>
+    </>
   );
 }

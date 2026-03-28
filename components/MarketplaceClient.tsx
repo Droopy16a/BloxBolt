@@ -9,18 +9,7 @@ import {
   type BasketItemsState,
   type BasketState,
 } from "@/lib/basket-storage";
-
-type MarketplaceItem = {
-  id: string;
-  name: string;
-  game: string;
-  category: string;
-  rarity: string;
-  price: number;
-  image: string | null;
-  seller: string;
-  verified: boolean;
-};
+import type { MarketplaceItem } from "@/lib/marketplace-items";
 
 type MarketplaceClientProps = {
   items: MarketplaceItem[];

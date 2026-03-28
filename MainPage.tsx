@@ -94,7 +94,7 @@ export default function MainPage({ user }: MainPageProps) {
       <SiteHeader user={user ?? null} />
 
       <main className="relative z-10 pt-0">
-        <section className="relative isolate pt-32 pb-24 text-center">
+        <section className="relative isolate pt-20 pb-24 text-center sm:pt-28 md:pt-32">
           <div className="container mx-auto px-6 relative">
             <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 right-0">
               <div className="relative mx-auto max-w-[100rem] h-full">
